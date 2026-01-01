@@ -23,8 +23,9 @@ const CreatePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const donorId = localStorage.getItem("donorId") || "donor1";
       const res = await axios.post("http://localhost:5001/api/foods", {
-        donorId: "313233343536373839303132", // temporary until login
+        donorId: donorId,
         foodType,
         quantity,
         preparedAt,

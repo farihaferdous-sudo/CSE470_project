@@ -36,6 +36,8 @@ import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
 import EditPage from "./pages/EditPage";
 import FoodDetailPage from "./pages/FoodDetailPage";
+import ImpactDashboard from "./pages/ImpactDashboard";
+import ProfilePage from "./pages/ProfilePage";
 
 const App = () => {
   return (
@@ -47,6 +49,8 @@ const App = () => {
           <Route path="/create" element={<CreatePage />} />
           <Route path="/edit/:id" element={<EditPage />} />
           <Route path="/food/:id" element={<FoodDetailPage />} />
+          <Route path="/impact" element={<ImpactDashboard />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </div>
     </div>

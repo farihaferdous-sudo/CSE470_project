@@ -19,6 +19,7 @@ const getRemainingTime = (preparedAt, maxSafeHours) => {
 
 const HomePage = () => {
   const [foods, setFoods] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     axios
@@ -28,7 +29,7 @@ const HomePage = () => {
         setFoods(res.data);
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [refreshTrigger]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this listing?")) return;
@@ -39,6 +40,19 @@ const HomePage = () => {
     } catch (err) {
       console.error(err);
       alert("Error deleting food");
+    }
+  };
+
+  const handleClaim = async (id, donorId) => {
+    try {
+      await axios.patch(`http://localhost:5001/api/foods/${id}/claim`, {
+        recipientId: localStorage.getItem("donorId") || "recipient1"
+      });
+      alert("Food claimed successfully! The donation will now count towards the donor's impact.");
+      setRefreshTrigger(refreshTrigger + 1);
+    } catch (err) {
+      console.error("Error claiming food:", err);
+      alert("Error claiming food: " + (err.response?.data?.message || err.message));
     }
   };
 
@@ -114,6 +128,20 @@ const HomePage = () => {
                   style={{ marginLeft: "5px" }}
                 >
                   Delete
+                </button>
+                <button
+                  onClick={() => handleClaim(food._id, food.donorId)}
+                  style={{
+                    marginLeft: "5px",
+                    backgroundColor: "#4caf50",
+                    color: "white",
+                    padding: "5px 10px",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer"
+                  }}
+                >
+                  ✓ Claim Food
                 </button>
               </div>
             )}
