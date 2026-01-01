@@ -1,58 +1,55 @@
-// import React from 'react'
-
-// const CreatePage = () => {
-//   return (
-//     <div>CreatePage</div>
-//   )
-// }
-
-// export default CreatePage
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
-const CreatePage = () => {
+const EditPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [foodType, setFoodType] = useState("");
   const [quantity, setQuantity] = useState("");
   const [preparedAt, setPreparedAt] = useState("");
   const [maxSafeHours, setMaxSafeHours] = useState(6);
   const [pickupLocation, setPickupLocation] = useState("");
-  const [pickupTime, setPickupTime] = useState("");
   const [area, setArea] = useState("Banani");
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5001/api/foods/${id}`)
+      .then((res) => {
+        const f = res.data;
+        setFoodType(f.foodType);
+        setQuantity(f.quantity);
+        setPreparedAt(new Date(f.preparedAt).toISOString().slice(0, 16)); // datetime-local format
+        setMaxSafeHours(f.maxSafeHours);
+        setPickupLocation(f.pickupLocation);
+        setArea(f.area);
+      })
+      .catch((err) => console.error(err));
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5001/api/foods", {
-        donorId: "313233343536373839303132", // temporary until login
+      await axios.put(`http://localhost:5001/api/foods/${id}`, {
         foodType,
         quantity,
         preparedAt,
         maxSafeHours,
         pickupLocation,
-        pickupTime,
-        area
+        area,
       });
-      alert("Food added successfully!");
-
-      // Reset form
-      setFoodType("");
-      setQuantity("");
-      setPreparedAt("");
-      setMaxSafeHours(6);
-      setPickupLocation("");
-      setPickupTime("");
-      setArea("Banani");
-
+      alert("Food updated successfully!");
+      navigate("/"); // redirect to home after update
     } catch (err) {
       console.error(err);
-      alert("Error adding food");
+      alert("Error updating food");
     }
   };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Add Food Donation</h1>
+      <h1>Edit Food Donation</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -94,20 +91,7 @@ const CreatePage = () => {
           required
         />
         <br />
-        <input
-          type="datetime-local"
-          placeholder="Preferred Pickup Time"
-          value={pickupTime}
-          onChange={(e) => setPickupTime(e.target.value)}
-          required
-        />
-        <br />
-
-        <select
-          value={area}
-          onChange={(e) => setArea(e.target.value)}
-          required
-        >
+        <select value={area} onChange={(e) => setArea(e.target.value)} required>
           <option value="Banani">Banani</option>
           <option value="Gulshan">Gulshan</option>
           <option value="Dhanmondi">Dhanmondi</option>
@@ -116,11 +100,10 @@ const CreatePage = () => {
           <option value="Mohammadpur">Mohammadpur</option>
         </select>
         <br />
-
-        <button type="submit">Add Food</button>
+        <button type="submit">Update Food</button>
       </form>
     </div>
   );
 };
 
-export default CreatePage;
+export default EditPage;
