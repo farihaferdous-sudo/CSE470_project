@@ -1,11 +1,17 @@
 import express from "express";
 import Food from "../models/Food.js";
-import { getFoodById, getAllFoods } from "../controllers/foodController.js";
+import { createFood, getFoodById, getAllFoods  } from "../controllers/foodController.js";
 import { updateImpactOnDonate, updateImpactOnClaim } from "../controllers/impactController.js";
 
-console.log("Imported controllers:", { getFoodById });
+console.log("Imported controllers:", { createFood, getFoodById });
 
 const router = express.Router();
+
+router.post("/", createFood);
+router.get("/", getAllFoods); 
+router.get("/:id", getFoodById);
+
+// router.patch("/:id/claim", claimFood);
 
 router.post("/", async (req, res) => {
   try {
