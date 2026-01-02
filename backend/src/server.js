@@ -4,6 +4,7 @@ import cors from "cors";
 
 import foodRoutes from "./routes/foodRoutes.js";
 import notesRoutes from "./routes/notesRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import impactRoutes from "./routes/impactRoutes.js";
 import { connectDB } from "./config/db.js";
 import { initializeBadges } from "./controllers/impactController.js";
@@ -23,6 +24,7 @@ app.use(
 app.use(express.json()); // this middleware will parse JSON bodies: req.body
 
 app.use("/api/foods", foodRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/impact", impactRoutes);
 // app.use("/api/notes", notesRoutes);
 

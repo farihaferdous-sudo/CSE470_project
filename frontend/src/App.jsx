@@ -39,6 +39,9 @@ import FoodDetailPage from "./pages/FoodDetailPage";
 import ImpactDashboard from "./pages/ImpactDashboard";
 import ProfilePage from "./pages/ProfilePage";
 
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+
 const App = () => {
   return (
     <div>
@@ -51,6 +54,8 @@ const App = () => {
           <Route path="/food/:id" element={<FoodDetailPage />} />
           <Route path="/impact" element={<ImpactDashboard />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
     </div>
