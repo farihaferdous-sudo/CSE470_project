@@ -43,32 +43,6 @@ export const getFoodById = async (req, res) => {
   }
 };
 
-// Get all foods
-// export const getAllFoods = async (req, res) => {
-//   try {
-//     const foods = await Food.find(); // optionally: .sort({ createdAt: -1 })
-//     const now = Date.now();
-
-//     // compute expiry dynamically
-//     const foodsWithExpiry = foods.map((food) => {
-//       const expiryTime =
-//         new Date(food.preparedAt).getTime() +
-//         food.maxSafeHours * 60 * 60 * 1000;
-
-//       return {
-//         ...food.toObject(),
-//         isExpired: expiryTime <= now 
-//       };
-//     });
-    
-//     res.json(foods);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-
-
 export const getAllFoods = async (req, res) => {
   try {
     const foods = await Food.find();
@@ -90,3 +64,35 @@ export const getAllFoods = async (req, res) => {
   }
 };
 
+export const claimFood = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { recipientId } = req.body;
+
+    const food = await Food.findById(id);
+    if (!food) return res.status(404).json({ message: "Food not found" });
+
+    if (food.status !== "available")
+      return res.status(400).json({ message: "Food cannot be claimed" });
+
+    food.status = "claimed";
+    food.recipientId = recipientId;
+
+    await food.save();
+
+    res.json({ message: "Food claimed successfully", food });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getFoodsByDonor = async (req, res) => {
+  try {
+    const { donorId } = req.params;
+    const foods = await Food.find({ donorId }); // only foods by this donor
+    res.status(200).json(foods);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch donor's foods" });
+  }
+};
