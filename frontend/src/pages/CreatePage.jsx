@@ -23,7 +23,16 @@ const CreatePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const donorId = localStorage.getItem("donorId") || "donor1";
+      // Get logged-in user from localStorage
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        alert("Please log in to donate food");
+        return;
+      }
+
+      const user = JSON.parse(storedUser);
+      const donorId = user._id || user.id;
+
       const res = await axios.post("http://localhost:5001/api/foods", {
         donorId: donorId,
         foodType,

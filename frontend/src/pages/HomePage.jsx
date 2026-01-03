@@ -44,9 +44,19 @@ const HomePage = () => {
   };
 
   const handleClaim = async (id, donorId) => {
+    // Get the logged-in user's ID from localStorage
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      alert("Please log in to claim food");
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    const recipientId = user._id || user.id;
+
     try {
       await axios.patch(`http://localhost:5001/api/foods/${id}/claim`, {
-        recipientId: localStorage.getItem("donorId") || "recipient1"
+        recipientId: recipientId
       });
       alert("Food claimed successfully! The donation will now count towards the donor's impact.");
       setRefreshTrigger(refreshTrigger + 1);
