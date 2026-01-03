@@ -43,7 +43,7 @@ const HomePage = () => {
     }
   };
 
-  const handleClaim = async (id, donorId) => {
+  const handleClaim = async (id) => {
     // Get the logged-in user's ID from localStorage
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -140,7 +140,7 @@ const HomePage = () => {
                   Delete
                 </button>
                 <button
-                  onClick={() => handleClaim(food._id, food.donorId)}
+                  onClick={() => handleClaim(food._id)}
                   style={{
                     marginLeft: "5px",
                     backgroundColor: "#4caf50",
