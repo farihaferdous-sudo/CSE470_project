@@ -14,6 +14,13 @@ const foodSchema = new mongoose.Schema(
       trim: true
     },
 
+    category: {
+      type: String,
+      required: true,
+      enum: ["cooked", "uncooked", "packaged"], // Added category
+      default: "cooked"
+    },
+
     quantity: {
       type: String,
       required: true

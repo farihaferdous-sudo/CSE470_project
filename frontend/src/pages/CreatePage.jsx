@@ -14,6 +14,7 @@ import axios from "axios";
 const CreatePage = () => {
   const [foodType, setFoodType] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [category, setCategory] = useState("cooked"); // Added category state
   const [preparedAt, setPreparedAt] = useState("");
   const [maxSafeHours, setMaxSafeHours] = useState(6);
   const [pickupLocation, setPickupLocation] = useState("");
@@ -28,6 +29,7 @@ const CreatePage = () => {
         donorId: donorId,
         foodType,
         quantity,
+        category, // Send category
         preparedAt,
         maxSafeHours,
         pickupLocation,
@@ -39,6 +41,7 @@ const CreatePage = () => {
       // Reset form
       setFoodType("");
       setQuantity("");
+      setCategory("cooked");
       setPreparedAt("");
       setMaxSafeHours(6);
       setPickupLocation("");
@@ -62,6 +65,16 @@ const CreatePage = () => {
           onChange={(e) => setFoodType(e.target.value)}
           required
         />
+        <br />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+        >
+          <option value="cooked">Cooked</option>
+          <option value="uncooked">Uncooked</option>
+          <option value="packaged">Packaged</option>
+        </select>
         <br />
         <input
           type="text"
