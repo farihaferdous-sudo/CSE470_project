@@ -18,8 +18,20 @@ const getRemainingTime = (preparedAt, maxSafeHours) => {
 };
 
 const HomePage = () => {
+  const [user, setUser] = useState(null);
   const [foods, setFoods] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Logged-in user:", parsedUser); // keeps your debug log
+      setUser(parsedUser); // only parse once
+    }
+  }, []);
+
+
 
   useEffect(() => {
     axios
@@ -58,6 +70,12 @@ const HomePage = () => {
 
   return (
     <div style={{ padding: "20px" }}>
+      {user && (
+        <h2 style={{ marginBottom: "10px" }}>
+          Welcome, <span style={{ color: "#28a745" }}>{user.username}</span>!
+        </h2>
+      )}
+
       <h1>Available Food Donations</h1>
 
       {foods.length === 0 && <p>No food available right now.</p>}
@@ -117,7 +135,7 @@ const HomePage = () => {
               </div>
             )}
 
-            {/* ✅ EDIT 4: hide Edit/Delete when expired */}
+            {/*  hide Edit/Delete when expired */}
             {!isExpired && food.status === "available" && (
               <div style={{ marginTop: "5px" }}>
                 <Link to={`/edit/${food._id}`}>
