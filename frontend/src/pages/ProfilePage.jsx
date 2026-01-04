@@ -1,40 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const [donorId, setDonorId] = useState(
-    localStorage.getItem("donorId") || "donor1"
-  );
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [impact, setImpact] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [inputDonorId, setInputDonorId] = useState(donorId);
 
-  const fetchImpact = (id) => {
-    setLoading(true);
+  useEffect(() => {
+    // Get logged-in user from localStorage
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      // Redirect to login if not authenticated
+      navigate("/login");
+      return;
+    }
+
+    const userData = JSON.parse(storedUser);
+    setUser(userData);
+
+    // Fetch impact data for the logged-in user
+    const userId = userData._id || userData.id;
     axios
-      .get(`http://localhost:5001/api/impact/donor/${id}`)
+      .get(`http://localhost:5001/api/impact/donor/${userId}`)
       .then((res) => {
-        console.log("Donor impact:", res.data);
+        console.log("User impact:", res.data);
         setImpact(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching donor impact:", err);
+        console.error("Error fetching user impact:", err);
         setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    setInputDonorId(donorId); // Sync input field with current donorId
-    fetchImpact(donorId);
-  }, [donorId]);
-
-  const handleChangeDonor = () => {
-    if (inputDonorId.trim()) {
-      setDonorId(inputDonorId);
-      localStorage.setItem("donorId", inputDonorId);
-    }
-  };
+  }, [navigate]);
 
   if (loading)
     return (
@@ -51,7 +50,7 @@ const ProfilePage = () => {
 
   return (
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
-      {/* Header with Donor Switcher */}
+      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -63,65 +62,9 @@ const ProfilePage = () => {
         }}
       >
         <h1 style={{ margin: 0 }}>👤 My Profile</h1>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <label
-            style={{
-              fontWeight: "bold",
-              color: "#333",
-              marginRight: "5px",
-            }}
-          >
-            Viewing:
-          </label>
-          <input
-            type="text"
-            value={inputDonorId}
-            onChange={(e) => setInputDonorId(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleChangeDonor()}
-            placeholder="Enter donor ID"
-            style={{
-              padding: "8px 12px",
-              border: "2px solid #4caf50",
-              borderRadius: "4px",
-              fontSize: "1em",
-              minWidth: "150px",
-            }}
-          />
-          <button
-            onClick={handleChangeDonor}
-            style={{
-              padding: "8px 20px",
-              backgroundColor: "#4caf50",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              fontSize: "0.95em",
-            }}
-          >
-            Load Profile
-          </button>
-          <button
-            onClick={() => fetchImpact(donorId)}
-            style={{
-              padding: "8px 20px",
-              backgroundColor: "#2196f3",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              fontSize: "0.95em",
-            }}
-            title="Refresh profile data"
-          >
-            🔄 Refresh
-          </button>
-        </div>
       </div>
 
-      {/* Current Donor Display */}
+      {/* User Info Display */}
       <div
         style={{
           backgroundColor: "#e8f5e9",
@@ -132,10 +75,13 @@ const ProfilePage = () => {
         }}
       >
         <p style={{ margin: 0, color: "#333" }}>
-          <strong>Active Profile:</strong>{" "}
+          <strong>Active User:</strong>{" "}
           <span style={{ fontSize: "1.1em", color: "#2e7d32" }}>
-            {donorId}
+            {user?.username || "User"}
           </span>
+        </p>
+        <p style={{ margin: "5px 0 0 0", color: "#666", fontSize: "0.95em" }}>
+          {user?.email}
         </p>
       </div>
 

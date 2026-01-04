@@ -13,6 +13,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// Helper function to generate default hourly data
+const generateHourlyData = () => {
+  return Array.from({ length: 24 }, (_, i) => ({
+    hour: `${i}:00`,
+    donations: Math.floor(Math.random() * 10) + 1,
+  }));
+};
+
 const ImpactDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -136,15 +144,21 @@ const ImpactDashboard = () => {
             <h3>Monthly Meals Saved</h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats.monthlyData}>
-                <CartesianGrid />
+                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
+                <YAxis label={{ value: 'Meals Saved', angle: -90, position: 'insideLeft' }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                  formatter={(value) => [`${value} meals`, 'Meals Saved']}
+                />
+                <Legend />
                 <Line
                   type="monotone"
                   dataKey="mealsSaved"
                   stroke="#4caf50"
                   strokeWidth={2}
+                  dot={{ fill: '#4caf50', r: 5 }}
+                  activeDot={{ r: 7 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -160,11 +174,38 @@ const ImpactDashboard = () => {
             <h3>Monthly Waste Reduced</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={stats.monthlyData}>
-                <CartesianGrid />
+                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="wasteReduced" fill="#2196f3" />
+                <YAxis label={{ value: 'Waste (kg)', angle: -90, position: 'insideLeft' }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                  formatter={(value) => [`${value.toFixed(1)} kg`, 'Waste Reduced']}
+                />
+                <Legend />
+                <Bar dataKey="wasteReduced" fill="#2196f3" name="Waste Reduced (kg)" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "#f5f5f5",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>Hourly Donations Pattern</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={stats.hourlyData || generateHourlyData()}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="hour" label={{ value: 'Hour of Day', position: 'insideBottom', offset: -5 }} />
+                <YAxis label={{ value: 'Donations', angle: -90, position: 'insideLeft' }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                  formatter={(value) => [`${value} donations`, 'Count']}
+                />
+                <Legend />
+                <Bar dataKey="donations" fill="#ff9800" name="Donations" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
