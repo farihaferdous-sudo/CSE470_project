@@ -149,5 +149,36 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.patch("/:id/pickup-time", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { pickupTime, donorId } = req.body;
+
+    if (!pickupTime) {
+      return res.status(400).json({ message: "pickupTime is required" });
+    }
+
+    const food = await Food.findById(id);
+    if (!food) return res.status(404).json({ message: "Food not found" });
+
+    // ✅ Only donor can set pickup time
+    if (food.donorId !== donorId) {
+      return res.status(403).json({ message: "You are not the donor of this food" });
+    }
+
+    // ✅ Only allow if claimed
+    if (food.status !== "claimed") {
+      return res.status(400).json({ message: "Pickup time can only be added when food is claimed" });
+    }
+
+    // ✅ Update pickupTime
+    food.pickupTime = pickupTime;
+    await food.save();
+
+    res.status(200).json({ message: "Pickup time updated successfully", food });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 export default router;
