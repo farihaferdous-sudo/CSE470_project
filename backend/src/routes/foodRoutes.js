@@ -1,6 +1,6 @@
 import express from "express";
 import Food from "../models/Food.js";
-import { createFood, getFoodById, getAllFoods, claimFood  } from "../controllers/foodController.js";
+import { createFood, getFoodById, getAllFoods  } from "../controllers/foodController.js";
 import { updateImpactOnDonate, updateImpactOnClaim } from "../controllers/impactController.js";
 
 console.log("Imported controllers:", { createFood, getFoodById });
@@ -11,7 +11,7 @@ router.post("/", createFood);
 router.get("/", getAllFoods); 
 router.get("/:id", getFoodById);
 
-router.patch("/:id/claim", claimFood);
+// router.patch("/:id/claim", claimFood);
 
 // router.get("/my-donations/:donorId", getFoodsByDonor);
 
@@ -77,6 +77,25 @@ router.patch("/:id/claim", async (req, res) => {
     
     await updateImpactOnClaim(sanitizedDonorId, mealQuantity, wasteEstimate);
 
+    // Notify Donor
+    if (sanitizedDonorId) {
+      const donorUser = await User.findOne({ username: sanitizedDonorId });
+      if (donorUser) {
+        const notification = {
+          message: `Your donation "${food.foodType}" has been claimed by a receiver!`,
+          date: new Date(),
+          read: false
+        };
+        donorUser.notifications.push(notification);
+        await donorUser.save();
+        
+        // Simulate Email
+        console.log(`📧 SIMULATED EMAIL to ${donorUser.email}: Subject: Your donation claimed! Body: ${notification.message}`);
+      } else {
+        console.log(`Donor user '${sanitizedDonorId}' not found for notification.`);
+      }
+    }
+
     await food.save();
     res.json({ message: "Food claimed successfully", food });
   } catch (error) {
@@ -98,6 +117,7 @@ router.put("/:id", async (req, res) => {
     // Update fields
     food.foodType = req.body.foodType || food.foodType;
     food.quantity = req.body.quantity || food.quantity;
+    food.category = req.body.category || food.category; // Added category
     food.preparedAt = req.body.preparedAt || food.preparedAt;
     food.maxSafeHours = req.body.maxSafeHours || food.maxSafeHours;
     food.pickupLocation = req.body.pickupLocation || food.pickupLocation;
