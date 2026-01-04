@@ -8,6 +8,12 @@ const foodSchema = new mongoose.Schema(
       required: true
     },
 
+    recipientId: {           
+      type: String,
+      default: null
+    },
+
+
     foodType: {
       type: String,
       required: true,
@@ -43,7 +49,8 @@ const foodSchema = new mongoose.Schema(
 
     pickupTime: {        
       type: Date,
-      required: true
+      // required: true
+      default: null
     },
 
     area: {
@@ -63,6 +70,11 @@ const foodSchema = new mongoose.Schema(
       type: String,
       enum: ["available", "claimed", "expired"],
       default: "available"
+    },
+
+    reminderSent: {       
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

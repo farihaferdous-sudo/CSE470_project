@@ -1,4 +1,6 @@
 import Food from "../models/Food.js";
+import User from "../models/User.js";
+import { scheduleNotification } from "../jobs/reminderJob.js";
 
 // Create food donation
 export const createFood = async (req, res) => {
@@ -12,8 +14,8 @@ export const createFood = async (req, res) => {
       maxSafeHours: req.body.maxSafeHours,
       pickupLocation: req.body.pickupLocation,
       pickupTime: req.body.pickupTime,
-      area: req.body.area
-    //   status: "available"
+      area: req.body.area,
+      status: "available"
     });
 
     await food.save();
@@ -142,5 +144,114 @@ export const getAllFoods = async (req, res) => {
   } catch (error) {
     console.error("Get all foods error:", error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+// export const claimFood = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { recipientId } = req.body;
+
+//     const food = await Food.findById(id);
+//     if (!food) return res.status(404).json({ message: "Food not found" });
+
+//     if (food.status !== "available")
+//       return res.status(400).json({ message: "Food cannot be claimed" });
+
+//     food.status = "claimed";
+//     food.recipientId = recipientId;
+//     await food.save();
+
+//     // --- Schedule notifications 30 minutes before pickup ---
+//     const donorMessage = `Your food donation "${food.foodType}" will be picked up at ${new Date(food.pickupTime).toLocaleString()}`;
+//     const receiverMessage = `Reminder: You have a food pickup scheduled at ${new Date(food.pickupTime).toLocaleString()} for "${food.foodType}"`;
+
+//     await scheduleNotification(food.donorId, donorMessage, food.pickupTime, 30);
+//     await scheduleNotification(food.recipientId, receiverMessage, food.pickupTime, 30);
+
+//     res.json({ message: "Food claimed successfully and notifications scheduled", food });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+export const claimFood = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { recipientId } = req.body;
+
+    const food = await Food.findById(id);
+    if (!food) return res.status(404).json({ message: "Food not found" });
+
+    if (food.status !== "available")
+      return res.status(400).json({ message: "Food cannot be claimed" });
+
+    // Set claimed status and recipient
+    food.status = "claimed";
+    food.recipientId = recipientId;
+    await food.save();
+
+    // Notify Donor immediately
+    const donorUser = await User.findOne({ username: food.donorId });
+    if (donorUser) {
+      const notification = {
+        message: `Your donation "${food.foodType}" has been claimed!`,
+        date: new Date(),
+        read: false
+      };
+      donorUser.notifications.push(notification);
+      await donorUser.save();
+
+      console.log(`📧 SIMULATED EMAIL to ${donorUser.email}: ${notification.message}`);
+    }
+
+    res.json({
+      message: "Food claimed successfully! Donor can now set preferred pickup time.",
+      food
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+// Update food listing
+export const updateFood = async (req, res) => {
+  try {
+    const food = await Food.findById(req.params.id);
+    if (!food) return res.status(404).json({ message: "Food not found" });
+
+    if (food.status === "expired") {
+      return res.status(400).json({ message: "Cannot edit expired food" });
+    }
+
+    // Update basic fields
+    food.foodType = req.body.foodType || food.foodType;
+    food.quantity = req.body.quantity || food.quantity;
+    food.category = req.body.category || food.category;
+    food.preparedAt = req.body.preparedAt || food.preparedAt;
+    food.maxSafeHours = req.body.maxSafeHours || food.maxSafeHours;
+    food.pickupLocation = req.body.pickupLocation || food.pickupLocation;
+    food.area = req.body.area || food.area;
+
+    // Only allow updating pickupTime if food is claimed
+    if (food.status === "claimed" && req.body.pickupTime) {
+      food.pickupTime = req.body.pickupTime;
+
+      // Schedule notifications 30 minutes before pickup
+      const donorMessage = `Your food donation "${food.foodType}" will be picked up at ${new Date(food.pickupTime).toLocaleString()}`;
+      const receiverMessage = `Reminder: You have a food pickup scheduled at ${new Date(food.pickupTime).toLocaleString()} for "${food.foodType}"`;
+
+      await scheduleNotification(food.donorId, donorMessage, food.pickupTime, 30);
+      await scheduleNotification(food.recipientId, receiverMessage, food.pickupTime, 30);
+    }
+
+    await food.save();
+    res.json({ message: "Food updated successfully", food });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };
