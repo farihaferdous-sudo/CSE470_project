@@ -144,4 +144,3 @@ export const getAllFoods = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-

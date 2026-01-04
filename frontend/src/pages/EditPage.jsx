@@ -20,7 +20,7 @@ const EditPage = () => {
         const f = res.data;
         setFoodType(f.foodType);
         setQuantity(f.quantity);
-        setPreparedAt(new Date(f.preparedAt).toISOString().slice(0, 16)); // datetime-local format
+        setPreparedAt(new Date(f.preparedAt).toISOString().slice(0, 16));
         setMaxSafeHours(f.maxSafeHours);
         setPickupLocation(f.pickupLocation);
         setArea(f.area);
@@ -40,7 +40,7 @@ const EditPage = () => {
         area,
       });
       alert("Food updated successfully!");
-      navigate("/"); // redirect to home after update
+      navigate("/");
     } catch (err) {
       console.error(err);
       alert("Error updating food");
@@ -51,45 +51,15 @@ const EditPage = () => {
     <div style={{ padding: "20px" }}>
       <h1>Edit Food Donation</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Food Type"
-          value={foodType}
-          onChange={(e) => setFoodType(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Food Type" value={foodType} onChange={(e) => setFoodType(e.target.value)} required />
         <br />
-        <input
-          type="text"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
         <br />
-        <input
-          type="datetime-local"
-          placeholder="Prepared At"
-          value={preparedAt}
-          onChange={(e) => setPreparedAt(e.target.value)}
-          required
-        />
+        <input type="datetime-local" placeholder="Prepared At" value={preparedAt} onChange={(e) => setPreparedAt(e.target.value)} required />
         <br />
-        <input
-          type="number"
-          placeholder="Max Safe Hours"
-          value={maxSafeHours}
-          onChange={(e) => setMaxSafeHours(e.target.value)}
-          required
-        />
+        <input type="number" placeholder="Max Safe Hours" value={maxSafeHours} onChange={(e) => setMaxSafeHours(e.target.value)} required />
         <br />
-        <input
-          type="text"
-          placeholder="Pickup Location"
-          value={pickupLocation}
-          onChange={(e) => setPickupLocation(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Pickup Location" value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} required />
         <br />
         <select value={area} onChange={(e) => setArea(e.target.value)} required>
           <option value="Banani">Banani</option>

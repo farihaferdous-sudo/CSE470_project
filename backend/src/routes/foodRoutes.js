@@ -1,6 +1,5 @@
 import express from "express";
 import Food from "../models/Food.js";
-import User from "../models/User.js";
 import { createFood, getFoodById, getAllFoods  } from "../controllers/foodController.js";
 import { updateImpactOnDonate, updateImpactOnClaim } from "../controllers/impactController.js";
 
@@ -13,6 +12,8 @@ router.get("/", getAllFoods);
 router.get("/:id", getFoodById);
 
 // router.patch("/:id/claim", claimFood);
+
+// router.get("/my-donations/:donorId", getFoodsByDonor);
 
 router.post("/", async (req, res) => {
   try {
