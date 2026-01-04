@@ -84,3 +84,46 @@ export const addNotification = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getNotifications = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("notifications");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user.notifications);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+export const postNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { notification } = req.body;
+
+    if (!notification) {
+      return res.status(400).json({ message: "Notification is required" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $push: { notifications: notification } },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(201).json({
+      message: "Notification added successfully",
+      notifications: user.notifications,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

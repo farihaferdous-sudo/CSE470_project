@@ -28,8 +28,7 @@ export default function Login() {
       if (!res.ok) {
         setMsg({ type: "error", text: data.message || "Login failed" });
       } else {
-        // Store the complete user object from the response
-        localStorage.setItem("user", JSON.stringify(data.user || data));
+        localStorage.setItem("user", JSON.stringify(data.user));
         setMsg({ type: "success", text: "Login successful! Redirecting..." });
         setTimeout(() => navigate("/"), 1200);
       }

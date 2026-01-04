@@ -38,6 +38,7 @@ import EditPage from "./pages/EditPage";
 import FoodDetailPage from "./pages/FoodDetailPage";
 import ImpactDashboard from "./pages/ImpactDashboard";
 import ProfilePage from "./pages/ProfilePage";
+import MyDonationPage from "./pages/MyDonationPage";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -56,6 +57,7 @@ const App = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/mydonations" element={<MyDonationPage />} />
         </Routes>
       </div>
     </div>
