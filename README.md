@@ -10,7 +10,7 @@ This platform aims to reduce food wastage by connecting restaurants, event organ
 
 1. The system should allow registered donors to upload details such as food type, quantity, expiry time, and pickup location.
 
-2. The system should support image uploads of food items to ensure transparency and trust.
+2. The system automatically calculates and displays remaining safe time before food expires.
 
 3. The system should automatically mark expired or unclaimed food as unavailable after a set time.
 
